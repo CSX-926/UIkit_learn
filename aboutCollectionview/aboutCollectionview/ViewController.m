@@ -13,12 +13,16 @@
  */
 
 #import "ViewController.h"
+#import "FlowLayout1.h"
+#import "imageCell.h"
 
-@interface ViewController () <UIScrollViewDelegate>
+@interface ViewController () <UIScrollViewDelegate, UICollectionViewDataSource, UICollectionViewDelegate>
 
-@property (nonatomic, strong) UICollectionViewFlowLayout *layout;
-
+@property (nonatomic, strong) FlowLayout1 *layout;
+// 
 @property (nonatomic, strong) UICollectionView *collectionView;
+// 数据源数据
+@property (nonatomic, strong) NSArray<UIImage*> *imagesData;
 
 @end
 
@@ -27,6 +31,8 @@
 
 @implementation ViewController
 
+static NSString* const identifier_cell = @"identifier_cell";
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -34,17 +40,15 @@
     
     [self setupLayout];
     [self setupCollectionView];
-    
-    
-//    NSLog(@" 1 collectionview 的大小和位置: %@",
-//          NSStringFromCGRect(self.collectionView.frame)); 
+    [self loadData];
 }
 
 - (void)setupLayout{
-    self.layout = [[UICollectionViewFlowLayout alloc]init];
+    self.layout = [[FlowLayout1 alloc]init];
     self.layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
-    self.layout.itemSize = CGSizeMake(200, 200);
-    self.layout.minimumLineSpacing = 10;
+    // 宽度充满屏幕，高度和 collectionview 一样
+    self.layout.itemSize = CGSizeMake(self.view.frame.size.width, 400);
+    self.layout.minimumLineSpacing = 0;
     
 }
 
@@ -53,40 +57,35 @@
 //    CGFloat top = self.view.safeAreaInsets.top;
     
     // 这个 collectionview 的大小
-    CGRect frame = CGRectMake(0,
-                              300,
-                              self.view.frame.size.width,
-                              400);
+    CGRect frame = CGRectMake(0, 300,  self.view.frame.size.width, 400);
     self.collectionView = [[UICollectionView alloc]initWithFrame:frame collectionViewLayout:self.layout];
     
-    
+    self.collectionView.dataSource = self;
+    self.collectionView.delegate = self;
+    self.collectionView.pagingEnabled = YES;
     self.collectionView.backgroundColor = [UIColor systemCyanColor];
+    
     // CGPoint 中心
-    self.collectionView.center = self.view.center;
-    self.collectionView.bounds = CGRectMake(0, 300, self.view.frame.size.width,
-                                            400);
+//    self.collectionView.center = self.view.center;
+//    self.collectionView.bounds = CGRectMake(0, 300, self.view.frame.size.width, 400);
     
 //    NSLog(@" 1 collectionview 的父控件: %@", self.collectionView.superview);
-
     
-    [self.view addSubview:self.collectionView];
+    // 注册
+    [self.collectionView registerClass:[imageCell class] forCellWithReuseIdentifier:identifier_cell];
     
-    NSLog(@" 2 collectionview 的父控件: %@", self.collectionView.superview);
-    
+//    NSLog(@" 2 collectionview 的父控件: %@", self.collectionView.superview);
 //    NSLog(@"collectionview 的子控件: %@", self.collectionView.subviews);
-    
-    NSLog(@" 2 collectionview 的大小和位置: %@",
-          NSStringFromCGRect(self.collectionView.frame)); 
-    
+    [self.view addSubview:self.collectionView];
 }
 
 
 
 
-- (void)viewDidLayoutSubviews{
+//- (void)viewDidLayoutSubviews{
 //    NSLog(@" 3 collectionview 的大小和位置: %@",
 //          NSStringFromCGRect(self.collectionView.frame)); 
-}
+//}
 
 
 
@@ -97,5 +96,50 @@
     NSLog(@"点击了外层的控制器");
 }
 
+
+
+- (void)loadData{
+    // 创建数据
+    NSArray *namesArr = [NSArray arrayWithObjects:@"image_01", @"image_02", @"image_03", @"image_04", @"image_05", @"image_06", nil];
+    
+//    NSArray *namesArr1 = @[@"image_01", @"image_02", @"image_03", @"image_04", @"image_05", @"image_06"];
+//    NSArray *_arr = [[NSArray alloc]initWithObjects:@"image_01", @"image_02", @"image_03", @"image_04", @"image_05", @"image_06", nil];
+    
+    NSMutableArray *tempArray = [NSMutableArray array];
+    
+    for(int i=0; i< namesArr.count; i++){
+        UIImage *image = [UIImage imageNamed:namesArr[i]];
+        if(image){
+            [tempArray addObject:image];
+        }
+    }
+    
+    self.imagesData = tempArray;
+    
+//    NSLog(@"%@", self.imagesData);
+}
+
+
+
+
+#pragma mark - uicollectionview 数据源方法
+- (NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView{
+    return 1;
+}
+
+- (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
+    return self.imagesData.count;
+}
+
+
+- (__kindof UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
+    
+    imageCell *cell = [self.collectionView dequeueReusableCellWithReuseIdentifier:identifier_cell forIndexPath:indexPath];
+    
+    // 设置
+    cell.imageView.image = self.imagesData[indexPath.item];
+    
+    return cell;
+}
 
 @end
