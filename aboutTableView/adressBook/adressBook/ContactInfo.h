@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic, strong) NSString *con_name;
 @property(nonatomic, strong) NSString *con_phone;
+@property(nonatomic, strong) NSString *con_headimageUrl;
 
 @end
 

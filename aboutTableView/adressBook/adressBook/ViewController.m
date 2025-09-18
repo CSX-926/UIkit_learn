@@ -8,6 +8,7 @@
 #import "ViewController.h"
 #import "ContactInfo.h"
 #import "YYModel/YYModel.h"
+#import "contactCell.h"
 
 @interface ViewController ()<UITableViewDelegate, UITableViewDataSource>
 
@@ -103,6 +104,12 @@
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     
+    // 指定高度
+//    self.tableView.rowHeight = 60;
+    // 启动自动计算
+    self.tableView.rowHeight = UITableViewAutomaticDimension;
+    self.tableView.estimatedRowHeight = 60;
+    
     [self.view addSubview:self.tableView];
     
     self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -144,16 +151,17 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
     static NSString *cell_indentifier = @"cell_indentifier";
     // 1. cell
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cell_indentifier];
+    contactCell *cell = [tableView dequeueReusableCellWithIdentifier:cell_indentifier];
     if(!cell){
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cell_indentifier];
+        cell = [[contactCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:cell_indentifier];
     }
     
     // 2. 设置
     NSString *key = self.allKeyNames[indexPath.section];
     ContactInfo *con = self.DicContacts[key][indexPath.row];
-    cell.textLabel.text = con.con_name;
-    cell.detailTextLabel.text = con.con_phone;
+    [cell configData:con];
+    
+    
     
     return cell;
 }
@@ -168,6 +176,13 @@
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index{
     return index;
 }
+
+
+
+//// 设置固定的高度，给这个 indexpath 上的 cell
+//- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath{
+//    return 60;
+//}
 
 
 
