@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation PersonModel
 
-
+// 这个类命名方法，属于开发者的一种约定俗成的规范
 + (instancetype)personWithName:(NSString *)name paramAge:(NSInteger)age{
     PersonModel *p = [[PersonModel alloc] init];
     p.PersonName = name;
